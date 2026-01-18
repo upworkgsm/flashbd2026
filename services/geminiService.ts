@@ -144,10 +144,10 @@ export class GeminiService {
     signal?: AbortSignal
   ): Promise<{ audioUrl: string, buffer: AudioBuffer, translatedText: string, originalText: string, srtSubtitles: string }> {
     
-    onProgress("à¦à¦¨à§à¦à§à¦¨à§à¦ à¦¬à¦¿à¦¶à§à¦²à§à¦·à¦£ à¦ à¦à¦¨à§à¦¬à¦¾à¦¦ à¦à¦°à¦¾ à¦¹à¦à§à¦à§...");
+    onProgress("Ã Â¦ÂÃ Â¦Â¨Ã Â§ÂÃ Â¦ÂÃ Â§ÂÃ Â¦Â¨Ã Â§ÂÃ Â¦Â Ã Â¦Â¬Ã Â¦Â¿Ã Â¦Â¶Ã Â§ÂÃ Â¦Â²Ã Â§ÂÃ Â¦Â·Ã Â¦Â£ Ã Â¦Â Ã Â¦ÂÃ Â¦Â¨Ã Â§ÂÃ Â¦Â¬Ã Â¦Â¾Ã Â¦Â¦ Ã Â¦ÂÃ Â¦Â°Ã Â¦Â¾ Ã Â¦Â¹Ã Â¦ÂÃ Â§ÂÃ Â¦ÂÃ Â§Â...");
     const translation = await this.translateAudio(fileBase64, mimeType, targetLang, duration, signal);
     
-    onProgress("à¦­à¦¯à¦¼à§à¦¸à¦à¦­à¦¾à¦° à¦¤à§à¦°à¦¿ à¦ à¦¸à¦®à§ à¦¸à¦®à¦¨à§à¦¬à¦¯à¦¼ à¦à¦°à¦¾ à¦¹à¦à§à¦à§...");
+    onProgress("Ã Â¦Â­Ã Â¦Â¯Ã Â¦Â¼Ã Â§ÂÃ Â¦Â¸Ã Â¦ÂÃ Â¦Â­Ã Â¦Â¾Ã Â¦Â° Ã Â¦Â¤Ã Â§ÂÃ Â¦Â°Ã Â¦Â¿ Ã Â¦Â Ã Â¦Â¸Ã Â¦Â®Ã Â§Â Ã Â¦Â¸Ã Â¦Â®Ã Â¦Â¨Ã Â§ÂÃ Â¦Â¬Ã Â¦Â¯Ã Â¦Â¼ Ã Â¦ÂÃ Â¦Â°Ã Â¦Â¾ Ã Â¦Â¹Ã Â¦ÂÃ Â§ÂÃ Â¦ÂÃ Â§Â...");
     const dubResult = await this.generateDubbing(translation.text, voice, duration, signal);
     
     return {
