@@ -62,7 +62,7 @@ export class GeminiService {
       "srt": "..."
     }`;
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || 'FAKE_API_KEY_FOR_DEVELOPMENT' });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-pro-preview',
       contents: {
@@ -98,7 +98,7 @@ export class GeminiService {
 
     const ttsPrompt = `Speak this text: ${text}. (Target pacing: ${targetDuration.toFixed(1)} seconds)`;
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || 'FAKE_API_KEY_FOR_DEVELOPMENT' });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
       contents: { parts: [{ text: ttsPrompt }] },
@@ -144,10 +144,10 @@ export class GeminiService {
     signal?: AbortSignal
   ): Promise<{ audioUrl: string, buffer: AudioBuffer, translatedText: string, originalText: string, srtSubtitles: string }> {
     
-    onProgress("Ã Â¦ÂÃ Â¦Â¨Ã Â§ÂÃ Â¦ÂÃ Â§ÂÃ Â¦Â¨Ã Â§ÂÃ Â¦Â Ã Â¦Â¬Ã Â¦Â¿Ã Â¦Â¶Ã Â§ÂÃ Â¦Â²Ã Â§ÂÃ Â¦Â·Ã Â¦Â£ Ã Â¦Â Ã Â¦ÂÃ Â¦Â¨Ã Â§ÂÃ Â¦Â¬Ã Â¦Â¾Ã Â¦Â¦ Ã Â¦ÂÃ Â¦Â°Ã Â¦Â¾ Ã Â¦Â¹Ã Â¦ÂÃ Â§ÂÃ Â¦ÂÃ Â§Â...");
+    onProgress("কন্টেন্ট বিশ্লেষণ ও অনুবাদ করা হচ্ছে...");
     const translation = await this.translateAudio(fileBase64, mimeType, targetLang, duration, signal);
     
-    onProgress("Ã Â¦Â­Ã Â¦Â¯Ã Â¦Â¼Ã Â§ÂÃ Â¦Â¸Ã Â¦ÂÃ Â¦Â­Ã Â¦Â¾Ã Â¦Â° Ã Â¦Â¤Ã Â§ÂÃ Â¦Â°Ã Â¦Â¿ Ã Â¦Â Ã Â¦Â¸Ã Â¦Â®Ã Â§Â Ã Â¦Â¸Ã Â¦Â®Ã Â¦Â¨Ã Â§ÂÃ Â¦Â¬Ã Â¦Â¯Ã Â¦Â¼ Ã Â¦ÂÃ Â¦Â°Ã Â¦Â¾ Ã Â¦Â¹Ã Â¦ÂÃ Â§ÂÃ Â¦ÂÃ Â§Â...");
+    onProgress("ভয়েসওভার তৈরি ও সময় সমন্বয় করা হচ্ছে...");
     const dubResult = await this.generateDubbing(translation.text, voice, duration, signal);
     
     return {
