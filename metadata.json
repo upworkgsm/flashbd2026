@@ -1,0 +1,8 @@
+{
+  "name": "Copy of LinguaConvert - AI Audio/Video Dubber",
+  "description": "An advanced AI-powered platform for seamless audio and video translation, dubbing, and transcription using Google Gemini API.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
