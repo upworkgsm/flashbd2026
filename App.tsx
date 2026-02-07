@@ -35,8 +35,8 @@ const StopIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
 );
 
-const XIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+const DownloadIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
 );
 
 const SubtitleIcon = () => (
@@ -49,6 +49,10 @@ const Mp3Icon = () => (
 
 const ClockIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+);
+
+const CopyIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
 );
 
 // --- Components ---
@@ -87,6 +91,7 @@ const App: React.FC = () => {
   const [result, setResult] = useState<TranslationResult & { dubbedDuration?: number, mp3Url?: string, srtUrl?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPlayingSynced, setIsPlayingSynced] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -188,6 +193,14 @@ const App: React.FC = () => {
     }
   };
 
+  const copySubtitles = () => {
+    if (result?.srtSubtitles) {
+      navigator.clipboard.writeText(result.srtSubtitles);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const playSynced = () => {
     if (videoRef.current && dubbedAudioRef.current) {
       videoRef.current.currentTime = 0;
@@ -262,17 +275,21 @@ const App: React.FC = () => {
             <h3 className="text-xl font-bold bn-font flex items-center gap-2 mb-6">আউটপুট প্রিভিউ</h3>
             {result ? (
               <div className="space-y-6">
+                {/* Media Preview */}
                 <div className="relative rounded-2xl overflow-hidden bg-black aspect-video border border-slate-800 group">
                   {file?.type.startsWith('video') && fileUrl ? (
                     <video ref={videoRef} src={fileUrl} className="w-full h-full" />
                   ) : <div className="w-full h-full flex items-center justify-center opacity-20"><AudioIcon /></div>}
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={isPlayingSynced ? stopSynced : playSynced} className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+                    <button onClick={isPlayingSynced ? stopSynced : playSynced} className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-500/30">
                       {isPlayingSynced ? <StopIcon /> : <PlayIcon />}
                     </button>
                   </div>
                 </div>
+                
                 <audio ref={dubbedAudioRef} src={result.audioUrl} className="hidden" />
+
+                {/* Timing Badge */}
                 <div className="p-4 bg-blue-600/10 border border-blue-500/30 rounded-2xl flex items-center justify-between">
                   <div className="flex items-center gap-2 text-blue-400 bn-font text-sm font-bold">
                     <ClockIcon /> সময় সমন্বয় সম্পন্ন (Time Synced)
@@ -281,16 +298,41 @@ const App: React.FC = () => {
                     {duration.toFixed(2)}s / {result.dubbedDuration?.toFixed(2)}s
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <a href={result.mp3Url} download="dubbed.mp3" className="p-3 bg-blue-600 rounded-xl text-center font-bold bn-font flex items-center justify-center gap-2 text-sm"><Mp3Icon /> MP3</a>
-                  <a href={result.audioUrl} download="dubbed.wav" className="p-3 bg-slate-800 rounded-xl text-center font-bold bn-font flex items-center justify-center gap-2 text-sm"><AudioIcon /> WAV</a>
-                  {result.srtUrl && (
-                    <a href={result.srtUrl} download="subtitles.srt" className="p-3 bg-indigo-600/50 hover:bg-indigo-600 rounded-xl text-center font-bold bn-font flex items-center justify-center gap-2 text-sm transition-colors border border-indigo-500/30">
-                      <SubtitleIcon /> সাবটাইটেল
-                    </a>
-                  )}
+
+                {/* Audio Downloads */}
+                <div className="grid grid-cols-2 gap-3">
+                  <a href={result.mp3Url} download="dubbed.mp3" className="p-4 bg-slate-800 hover:bg-slate-700 transition-colors rounded-xl text-center font-bold bn-font flex items-center justify-center gap-2 text-sm border border-slate-700"><Mp3Icon /> MP3 ডাউনলোড</a>
+                  <a href={result.audioUrl} download="dubbed.wav" className="p-4 bg-slate-800 hover:bg-slate-700 transition-colors rounded-xl text-center font-bold bn-font flex items-center justify-center gap-2 text-sm border border-slate-700"><AudioIcon /> WAV ডাউনলোড</a>
                 </div>
-                <div className="space-y-2">
+
+                {/* Subtitle Section (HIGH VISIBILITY) */}
+                {result.srtUrl && (
+                  <div className="space-y-4 pt-4 border-t border-slate-800">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-bold text-slate-300 bn-font uppercase flex items-center gap-2">
+                        <SubtitleIcon /> সাবটাইটেল (SRT)
+                      </h4>
+                      <div className="flex gap-2">
+                        <button onClick={copySubtitles} className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 bn-font transition-colors">
+                          <CopyIcon /> {copied ? "কপি হয়েছে!" : "টেক্সট কপি করুন"}
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <a href={result.srtUrl} download="subtitles.srt" className="w-full p-4 bg-indigo-600 hover:bg-indigo-500 transition-all rounded-xl text-center font-extrabold bn-font flex items-center justify-center gap-2 text-base shadow-lg shadow-indigo-500/20 group">
+                      <DownloadIcon /> সাবটাইটেল ডাউনলোড করুন (SRT)
+                    </a>
+
+                    <div className="space-y-2">
+                      <p className="text-xs text-slate-500 uppercase font-bold bn-font">সাবটাইটেল প্রিভিউ (SRT Preview)</p>
+                      <div className="p-4 bg-slate-900/80 rounded-xl border border-slate-800 text-xs font-mono text-slate-400 leading-relaxed max-h-32 overflow-y-auto custom-scrollbar">
+                        {result.srtSubtitles}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-2 pt-4 border-t border-slate-800">
                    <p className="text-xs text-slate-500 uppercase font-bold bn-font">অনুবাদ চিত্র (Translated Script)</p>
                    <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-800 text-sm leading-relaxed max-h-40 overflow-y-auto bn-font">
                      {result.translatedText}
@@ -298,13 +340,22 @@ const App: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center opacity-30 bn-font">
-                <AudioIcon /> <p className="mt-4">ফাইল আপলোড করে প্রসেসিং শুরু করুন</p>
+              <div className="flex-1 flex flex-col items-center justify-center text-center opacity-30 bn-font p-12">
+                <div className="p-6 bg-slate-800 rounded-full mb-4">
+                  <VideoIcon />
+                </div>
+                <p className="text-lg font-medium">ফাইল আপলোড করে প্রসেসিং শুরু করুন</p>
+                <p className="text-sm text-slate-500 mt-2">আপনার ডাব করা ভিডিও বা অডিও এবং সাবটাইটেল এখানে প্রদর্শিত হবে।</p>
               </div>
             )}
           </div>
         </div>
       </main>
+      
+      {/* Footer Branding */}
+      <footer className="mt-20 border-t border-slate-800 py-10 text-center opacity-50">
+        <p className="bn-font text-sm">© ২০২৪ লিঙ্গুয়াকনভার্ট | আধুনিক AI দিয়ে তৈরি</p>
+      </footer>
     </div>
   );
 };
